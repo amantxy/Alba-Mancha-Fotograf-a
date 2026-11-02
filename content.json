@@ -1,0 +1,212 @@
+{
+  "site": {
+    "title": "Alba Mancha Fotografía",
+    "brand": "AM96 Photo",
+    "tagline": "Fotografía profesional",
+    "email": "am96photo@gmail.com",
+    "instagram": "am96photo",
+    "footer": "Fotografía de bodas, retrato, eventos y paisaje. Disponible para sesiones en toda España."
+  },
+  "admin": {
+    "passwordHash": "42c9780741d5c3713b3cd6c1fd7a24f245fdde3c0674ce4789ae4f3376d29853",
+    "github": {
+      "owner": "amantxy",
+      "repo": "Alba-Mancha-Fotograf-a",
+      "branch": "main"
+    }
+  },
+  "sections": [
+    {
+      "id": "inicio",
+      "type": "hero",
+      "label": "Inicio",
+      "title": "Momentos que se quedan",
+      "subtitle": "Fotografía honesta, luz natural y mirada propia.",
+      "cta": "Ver portfolio",
+      "ctaTarget": "portfolio",
+      "image": {
+        "src": "https://picsum.photos/id/1015/1600/1067",
+        "srcset": "https://picsum.photos/id/1015/800/534 800w, https://picsum.photos/id/1015/1600/1067 1600w, https://picsum.photos/id/1015/2400/1601 2400w",
+        "w": 1600,
+        "h": 1067,
+        "alt": "Paisaje de río entre montañas",
+        "caption": ""
+      }
+    },
+    {
+      "id": "portfolio",
+      "type": "galleries",
+      "label": "Portfolio",
+      "title": "Portfolio",
+      "intro": "Una selección de trabajos recientes. Pulsa en una galería para verla completa.",
+      "albums": [
+        {
+          "id": "paisaje",
+          "title": "Paisaje",
+          "description": "Naturaleza, viajes y luz.",
+          "cover": 0,
+          "photos": [
+            {
+              "src": "https://picsum.photos/id/1018/1600/1067",
+              "srcset": "https://picsum.photos/id/1018/800/534 800w, https://picsum.photos/id/1018/1600/1067 1600w, https://picsum.photos/id/1018/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Montañas",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/1036/1600/1067",
+              "srcset": "https://picsum.photos/id/1036/800/534 800w, https://picsum.photos/id/1036/1600/1067 1600w, https://picsum.photos/id/1036/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Bosque nevado",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/1039/1600/1067",
+              "srcset": "https://picsum.photos/id/1039/800/534 800w, https://picsum.photos/id/1039/1600/1067 1600w, https://picsum.photos/id/1039/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Cascada",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/1043/1600/1067",
+              "srcset": "https://picsum.photos/id/1043/800/534 800w, https://picsum.photos/id/1043/1600/1067 1600w, https://picsum.photos/id/1043/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Lago",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/1050/1600/1067",
+              "srcset": "https://picsum.photos/id/1050/800/534 800w, https://picsum.photos/id/1050/1600/1067 1600w, https://picsum.photos/id/1050/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Costa",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/1016/1600/1067",
+              "srcset": "https://picsum.photos/id/1016/800/534 800w, https://picsum.photos/id/1016/1600/1067 1600w, https://picsum.photos/id/1016/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Cañón",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "id": "retrato",
+          "title": "Retrato",
+          "description": "Personas, miradas e historias.",
+          "cover": 0,
+          "photos": [
+            {
+              "src": "https://picsum.photos/id/64/1600/1067",
+              "srcset": "https://picsum.photos/id/64/800/534 800w, https://picsum.photos/id/64/1600/1067 1600w, https://picsum.photos/id/64/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Retrato",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/91/1600/1067",
+              "srcset": "https://picsum.photos/id/91/800/534 800w, https://picsum.photos/id/91/1600/1067 1600w, https://picsum.photos/id/91/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Retrato en exterior",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/338/1600/1067",
+              "srcset": "https://picsum.photos/id/338/800/534 800w, https://picsum.photos/id/338/1600/1067 1600w, https://picsum.photos/id/338/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Retrato urbano",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/342/1600/1067",
+              "srcset": "https://picsum.photos/id/342/800/534 800w, https://picsum.photos/id/342/1600/1067 1600w, https://picsum.photos/id/342/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Retrato",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/1025/1600/1067",
+              "srcset": "https://picsum.photos/id/1025/800/534 800w, https://picsum.photos/id/1025/1600/1067 1600w, https://picsum.photos/id/1025/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Perro en la montaña",
+              "caption": ""
+            }
+          ]
+        },
+        {
+          "id": "ciudad",
+          "title": "Ciudad",
+          "description": "Arquitectura y calle.",
+          "cover": 0,
+          "photos": [
+            {
+              "src": "https://picsum.photos/id/1031/1600/1067",
+              "srcset": "https://picsum.photos/id/1031/800/534 800w, https://picsum.photos/id/1031/1600/1067 1600w, https://picsum.photos/id/1031/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Rascacielos",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/1029/1600/1067",
+              "srcset": "https://picsum.photos/id/1029/800/534 800w, https://picsum.photos/id/1029/1600/1067 1600w, https://picsum.photos/id/1029/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Ciudad",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/1033/1600/1067",
+              "srcset": "https://picsum.photos/id/1033/800/534 800w, https://picsum.photos/id/1033/1600/1067 1600w, https://picsum.photos/id/1033/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Calle",
+              "caption": ""
+            },
+            {
+              "src": "https://picsum.photos/id/1048/1600/1067",
+              "srcset": "https://picsum.photos/id/1048/800/534 800w, https://picsum.photos/id/1048/1600/1067 1600w, https://picsum.photos/id/1048/2400/1601 2400w",
+              "w": 1600,
+              "h": 1067,
+              "alt": "Arquitectura",
+              "caption": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sobre-mi",
+      "type": "about",
+      "label": "Sobre mí",
+      "title": "Sobre mí",
+      "text": "Soy Alba Mancha, fotógrafa. Me gusta contar historias a través de la luz y de los pequeños detalles que hacen único cada momento.\n\nTrabajo en bodas, retratos, eventos y proyectos personales. Si tienes una idea, cuéntamela y la hacemos realidad juntas.",
+      "image": {
+        "src": "https://picsum.photos/id/1062/1600/2000",
+        "srcset": "https://picsum.photos/id/1062/800/1000 800w, https://picsum.photos/id/1062/1600/2000 1600w, https://picsum.photos/id/1062/2400/3000 2400w",
+        "w": 1600,
+        "h": 2000,
+        "alt": "Alba Mancha, fotógrafa",
+        "caption": ""
+      }
+    },
+    {
+      "id": "contacto",
+      "type": "contact",
+      "label": "Contacto",
+      "title": "Contacto",
+      "text": "¿Tienes una sesión, un evento o una idea en mente? Escríbeme por el chat, por email o por Instagram y te responderé lo antes posible."
+    }
+  ]
+}
