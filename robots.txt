@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://albamancha.com/sitemap.xml

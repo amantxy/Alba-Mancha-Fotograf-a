@@ -26,7 +26,7 @@ images/         Fotos subidas desde el modo administrador
 
 ---
 
-## 1. Publicar gratis con GitHub Pages y tu dominio
+## 1. Publicar gratis con GitHub Pages en albamancha.com
 
 ### Paso 1. Juntar los cambios en `main`
 El código está en la rama `claude/photography-portfolio-site-8gw09l`. En GitHub, abre una *Pull Request* hacia `main` y pulsa **Merge**.
@@ -35,27 +35,33 @@ El código está en la rama `claude/photography-portfolio-site-8gw09l`. En GitHu
 1. Ve al repositorio y entra en **Settings › Pages**.
 2. En *Build and deployment*, en **Source**, elige **Deploy from a branch**.
 3. Elige la rama **main** y la carpeta **/ (root)**, y pulsa **Save**.
-4. En 1 o 2 minutos la web estará en `https://amantxy.github.io/Alba-Mancha-Fotograf-a/`.
+4. En **Custom domain**, escribe `albamancha.com` y pulsa **Save**. El repositorio ya incluye el archivo `CNAME` con este dominio.
 
-### Paso 3. Conectar tu dominio
-1. En **Settings › Pages › Custom domain**, escribe tu dominio (por ejemplo `www.tudominio.com`) y pulsa **Save**. GitHub creará solo un archivo `CNAME` en el repositorio.
-2. En el panel de la empresa donde compraste el dominio (GoDaddy, IONOS, DonDominio, Namecheap…), entra en la **zona DNS** y crea estos registros:
+### Paso 3. Apuntar albamancha.com a GitHub en IONOS
+1. Entra en [ionos.es](https://www.ionos.es) y ve a **Menú › Dominios y SSL**.
+2. Pulsa en **albamancha.com** y abre la pestaña **DNS**.
+3. **Borra** los registros que IONOS trae por defecto y que apuntan a sus servidores. Son los de tipo **A** y **AAAA** con host `@`, y el registro `www`. Pulsa los tres puntos ⋮ de cada uno y elige **Eliminar**. No toques los registros **MX**, **TXT** ni **NS**: son los del correo y del propio dominio.
+4. Pulsa **Añadir registro** y crea estos registros, uno a uno. Si IONOS pregunta por el TTL, deja el valor por defecto.
 
-| Tipo  | Nombre / Host | Valor |
-|-------|---------------|-------|
-| A     | `@`           | `185.199.108.153` |
-| A     | `@`           | `185.199.109.153` |
-| A     | `@`           | `185.199.110.153` |
-| A     | `@`           | `185.199.111.153` |
-| AAAA  | `@`           | `2606:50c0:8000::153` |
-| AAAA  | `@`           | `2606:50c0:8001::153` |
-| AAAA  | `@`           | `2606:50c0:8002::153` |
-| AAAA  | `@`           | `2606:50c0:8003::153` |
-| CNAME | `www`         | `amantxy.github.io` |
+| Tipo  | Nombre de host | Apunta a |
+|-------|----------------|----------|
+| A     | `@`            | `185.199.108.153` |
+| A     | `@`            | `185.199.109.153` |
+| A     | `@`            | `185.199.110.153` |
+| A     | `@`            | `185.199.111.153` |
+| AAAA  | `@`            | `2606:50c0:8000::153` |
+| AAAA  | `@`            | `2606:50c0:8001::153` |
+| AAAA  | `@`            | `2606:50c0:8002::153` |
+| AAAA  | `@`            | `2606:50c0:8003::153` |
+| CNAME | `www`          | `amantxy.github.io` |
 
-   Borra cualquier otro registro **A** o **CNAME** de `@` o `www` que apunte a otro sitio (por ejemplo, la página de «aparcamiento» del proveedor).
-3. Espera a que los DNS se propaguen. Suele tardar entre unos minutos y unas horas, como mucho 48 h.
-4. Vuelve a **Settings › Pages** y marca **Enforce HTTPS** (candado gratis).
+5. Si IONOS avisa de que el registro entra en conflicto con otro existente, acepta **sustituir** el antiguo.
+6. Espera a que los cambios se propaguen. Suele tardar entre 15 minutos y unas horas, como mucho 48 h. En **Settings › Pages**, GitHub mostrará *«DNS check successful»* cuando estén listos.
+7. Marca **Enforce HTTPS** para tener el candado gratis. Si la casilla aparece gris, espera un rato: GitHub tarda hasta 24 h en emitir el certificado.
+
+La web quedará en **https://albamancha.com**. Quien escriba `www.albamancha.com` llegará también a ella.
+
+> **Recomendado:** verifica el dominio en GitHub para que nadie más pueda usarlo. Ve a la configuración de tu cuenta (tu foto › **Settings › Pages › Add a domain**), escribe `albamancha.com` y GitHub te dará un registro **TXT**. Créalo en IONOS desde **DNS › Añadir registro › TXT** y vuelve a GitHub para pulsar **Verify**.
 
 > **Alternativas gratuitas**: Netlify y Cloudflare Pages también sirven. Conecta el repositorio sin configurar nada de compilación (es una web estática) y añade tu dominio en su panel. Ten en cuenta que el botón «Publicar» del modo administrador guarda los cambios en GitHub, así que funciona igual con cualquiera de ellos si están conectados al repositorio.
 
