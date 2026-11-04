@@ -35,6 +35,30 @@
     return id;
   };
 
+  /* ---------- Google Drive ----------
+     Archivos y carpetas compartidos como «Cualquier persona con el enlace». */
+  App.drive = {
+    id(url) {
+      const m = String(url || '').match(/\/(?:d|folders)\/([\w-]{10,})/) || String(url || '').match(/[?&]id=([\w-]{10,})/);
+      return m ? m[1] : null;
+    },
+    isFolder: (url) => /\/folders\/|embeddedfolderview|\/drive\/u\/\d+\/folders/.test(String(url || '')),
+    isDrive: (url) => /(^|\.)(drive|docs)\.google\.com\//.test(String(url || '').replace(/^https?:\/\//, '')),
+    // Foto de Drive en 3 tamaños para que se vea nítida en cualquier pantalla
+    photo(url, alt = '', caption = '') {
+      const id = App.drive.id(url);
+      if (!id) return null;
+      const u = (w) => `https://lh3.googleusercontent.com/d/${id}=w${w}`;
+      return { src: u(1600), srcset: `${u(800)} 800w, ${u(1600)} 1600w, ${u(2400)} 2400w`, alt, caption, drive: id };
+    },
+    embed: (url) => 'https://drive.google.com/embeddedfolderview?id=' + encodeURIComponent(App.drive.id(url)) + '#grid',
+    open: (url) => 'https://drive.google.com/drive/folders/' + encodeURIComponent(App.drive.id(url))
+  };
+
+  // Convierte cualquier enlace (normal o de Drive) en una foto
+  App.photoFromUrl = (url, alt = '', caption = '') =>
+    (App.drive.isDrive(url) && !App.drive.isFolder(url) && App.drive.photo(url, alt, caption)) || { src: url, alt, caption };
+
   App.resolve = (url) => (url && App.blobUrls.has(url)) ? App.blobUrls.get(url) : url;
 
   App.toast = (msg, ms = 2800) => {
@@ -171,11 +195,12 @@
   function albumCard(sec, a, path) {
     const cover = a.photos && a.photos[a.cover || 0] || (a.photos && a.photos[0]);
     const n = (a.photos || []).length;
+    const hasDrive = a.drive && App.drive.id(a.drive);
     return `
       <a class="album-card${cover ? '' : ' empty'}" href="#/${esc(sec.id)}/${esc(a.id)}" data-album="${esc(a.id)}" data-section-id="${esc(sec.id)}">
         <div class="cover">${cover ? App.img(cover, { sizes: '(min-width: 1024px) 33vw, (min-width: 600px) 50vw, 100vw' }) : ICONS.camera}</div>
         <div class="meta">
-          <span class="count">${n} ${n === 1 ? 'foto' : 'fotos'}</span>
+          <span class="count">${n || !hasDrive ? `${n} ${n === 1 ? 'foto' : 'fotos'}` : ''}${hasDrive ? `${n ? ' · ' : ''}Google Drive` : ''}</span>
           <h3${path ? ` data-edit="${path}.title" data-placeholder="Título"` : ''}>${esc(a.title)}</h3>
           ${a.description || path ? `<p${path ? ` data-edit="${path}.description" data-placeholder="Descripción"` : ''}>${esc(a.description)}</p>` : ''}
         </div>
@@ -205,7 +230,15 @@
                   </button>
                   <figcaption>${esc(ph.caption)}</figcaption>
                 </figure>`).join('')}
-            </div>` : '<div class="empty-state">Esta galería todavía no tiene fotos.</div>'}
+            </div>` : (a.drive ? '' : '<div class="empty-state">Esta galería todavía no tiene fotos.</div>')}
+            ${a.drive && App.drive.id(a.drive) ? `
+            <div class="drive-block">
+              <div class="drive-head">
+                <h2>${(a.photos || []).length ? 'Más fotos en Google Drive' : 'Galería en Google Drive'}</h2>
+                <a class="btn btn-sm" href="${esc(App.drive.isFolder(a.drive) ? App.drive.open(a.drive) : a.drive)}" target="_blank" rel="noopener">Abrir en Google Drive ↗</a>
+              </div>
+              ${App.drive.isFolder(a.drive) ? `<iframe class="drive-frame" src="${esc(App.drive.embed(a.drive))}" title="Galería de Google Drive: ${esc(a.title)}" loading="lazy" allowfullscreen></iframe>` : ''}
+            </div>` : ''}
           </div>
         </section>`;
     }

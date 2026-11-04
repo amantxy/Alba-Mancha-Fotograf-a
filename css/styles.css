@@ -203,6 +203,12 @@ img.loaded { opacity: 1; }
 
 .empty-state { padding: 48px 24px; border: 1px dashed var(--border); border-radius: var(--radius); text-align: center; color: var(--text-soft); }
 
+/* ---------- Galerías de Google Drive ---------- */
+.drive-block { margin-top: clamp(28px, 4vw, 48px); }
+.drive-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.drive-head h2 { font-family: var(--font-serif); font-weight: 500; font-size: clamp(1.5rem, 3vw, 2rem); margin: 0; }
+.drive-frame { width: 100%; height: min(75vh, 760px); border: 1px solid var(--border); border-radius: var(--radius); background: #fff; }
+
 /* ---------- Sobre mí ---------- */
 .about { display: grid; gap: clamp(28px, 5vw, 72px); align-items: center; }
 @media (min-width: 860px) { .about { grid-template-columns: 5fr 6fr; } }

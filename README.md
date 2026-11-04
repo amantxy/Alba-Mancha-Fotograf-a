@@ -35,7 +35,7 @@ El código está en la rama `claude/photography-portfolio-site-8gw09l`. En GitHu
 1. Ve al repositorio y entra en **Settings › Pages**.
 2. En *Build and deployment*, en **Source**, elige **Deploy from a branch**.
 3. Elige la rama **main** y la carpeta **/ (root)**, y pulsa **Save**.
-4. En **Custom domain**, escribe `albamancha.com` y pulsa **Save**. El repositorio ya incluye el archivo `CNAME` con este dominio.
+4. Cuando hayas configurado los DNS de IONOS (paso 3), escribe `albamancha.com` en **Custom domain** y pulsa **Save**. Hasta entonces, la web se ve en `https://amantxy.github.io/Alba-Mancha-Fotograf-a/`.
 
 ### Paso 3. Apuntar albamancha.com a GitHub en IONOS
 1. Entra en [ionos.es](https://www.ionos.es) y ve a **Menú › Dominios y SSL**.
@@ -81,7 +81,7 @@ Para cambiar el email de destino: **modo admin › Ajustes › Email**. Si lo ca
 
 ### Entrar
 - Pulsa **«Acceso»** en el pie de la página, añade `#admin` al final de la dirección o usa el atajo `Ctrl/Cmd + Shift + E`.
-- Contraseña inicial: **`am96admin`**. **Cámbiala** en *Ajustes › Seguridad* y luego publica.
+- Usuario inicial: **`alba`** · Contraseña inicial: **`am96admin`**. **Cámbialos** en *Ajustes › Seguridad* y luego publica. Se guardan cifrados, nunca en claro.
 
 ### Editar
 - **Textos**: los textos editables aparecen con un borde punteado. Haz clic y escribe directamente.
@@ -89,6 +89,10 @@ Para cambiar el email de destino: **modo admin › Ajustes › Email**. Si lo ca
 - **Galerías**: en una sección de galerías, pulsa **＋ Nueva galería**. Dentro de una galería puedes:
   - **＋ Subir fotos**, o arrastrarlas sobre la página. Puedes subir varias a la vez.
   - Ordenarlas con ← →, editar el pie de foto (✎), elegir la portada (★) o borrarlas (🗑).
+- **Google Drive**: dentro de una galería tienes dos opciones:
+  - **🔗 Enlazar carpeta de Drive**: pega el enlace de una carpeta y se mostrará dentro de la galería, con un botón para abrirla en Drive. Es ideal para entregar sesiones completas.
+  - **＋ Fotos de Drive**: pega enlaces de fotos sueltas, uno por línea. Aparecen en el mosaico y en el visor a pantalla completa, en 3 tamaños.
+  - En Drive, comparte la carpeta o las fotos como **«Cualquier persona con el enlace»**. Si no, los visitantes no las verán.
 - **🖼 Cambiar imagen**: cambia la foto de portada o la de «Sobre mí».
 - **⚙ Ajustes**: nombre, lema, pie de página, email, Instagram, datos de GitHub y contraseña.
 - **⋯ Más**: descargar una copia de seguridad, importarla o descartar cambios.
