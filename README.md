@@ -90,7 +90,7 @@ Mientras esté activada, el público solo ve una portada que dice **«Página en
 
 ### Entrar
 - Pulsa **«Acceso»** en el pie de la página, añade `#admin` al final de la dirección o usa el atajo `Ctrl/Cmd + Shift + E`.
-- Usuario inicial: **`alba`** · Contraseña inicial: **`am96admin`**. **Cámbialos** en *Ajustes › Seguridad* y luego publica. Se guardan cifrados, nunca en claro.
+- Entra con tu usuario y contraseña de administrador. Puedes cambiarlos cuando quieras en *Ajustes › Seguridad* y luego publicar. Se guardan cifrados, nunca en claro.
 
 ### Editar
 - **Textos**: los textos editables aparecen con un borde punteado. Haz clic y escribe directamente.
