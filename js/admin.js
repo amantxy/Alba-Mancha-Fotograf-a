@@ -355,6 +355,17 @@
       hero.appendChild(t);
     }
 
+    if (section.type === 'instagram') {
+      const slot = $('[data-slot="instagram"]', main);
+      slot.className = 'admin-tools bar';
+      const mode = !section.feedUrl ? 'Feed automático sin configurar'
+        : section.igMode === 'hashtag' && section.hashtag ? `Mostrando solo publicaciones con #${esc(String(section.hashtag).replace(/^#/, ''))}`
+        : 'Mostrando todas tus publicaciones, menos las que ocultes';
+      slot.innerHTML = tool('ig-config', '⚙ Configurar feed automático', 'Configurar el feed automático de Instagram') +
+        tool('ig-add-post', '＋ Publicación concreta', 'Insertar una publicación concreta de Instagram') +
+        `<span class="hint">${mode}</span>`;
+    }
+
     if (section.type === 'about') {
       const slot = $('[data-slot="image"]', main);
       slot.className = 'admin-tools floating';
@@ -522,6 +533,56 @@
         break;
       }
       case 'photo-cover': album.cover = +a1; saveDraft(); App.render(); App.toast('Portada actualizada'); break;
+      case 'ig-config': {
+        const v = await form({
+          title: 'Feed automático de Instagram',
+          wide: true,
+          fields: [
+            { type: 'note', html: 'Tus publicaciones de Instagram aparecerán aquí <strong>solas</strong>, con el diseño de la web. Para conectarlo (una sola vez):<br>1. Crea una cuenta gratuita en <a href="https://behold.so" target="_blank" rel="noopener">behold.so</a> y conecta tu Instagram (tiene que ser cuenta profesional o de creador).<br>2. Crea un feed de tipo <strong>JSON</strong> y copia su enlace (empieza por <code>https://feeds.behold.so/…</code>).<br>3. Pégalo aquí debajo.' },
+            { name: 'feedUrl', label: 'Enlace del feed JSON (vacío = desactivar)', value: s.feedUrl || '', placeholder: 'https://feeds.behold.so/…' },
+            { name: 'igMode', label: '¿Qué publicaciones se muestran?', type: 'select', value: s.igMode || 'all', options: [
+              { value: 'all', label: 'Todas, menos las que yo oculte (botón 🚫 en cada una)' },
+              { value: 'hashtag', label: 'Solo las que lleven un hashtag concreto' }
+            ] },
+            { name: 'hashtag', label: 'Hashtag (si eliges esa opción)', value: s.hashtag || '', placeholder: 'albamanchaweb', help: 'Escribe este hashtag en el texto de las publicaciones de Instagram que quieras que salgan en la web.' },
+            { name: 'limit', label: 'Número máximo de publicaciones', value: String(s.limit || 12) }
+          ],
+          onMount(api) {
+            api.onSubmit = (vals) => {
+              if (vals.feedUrl && !/^https:\/\//.test(vals.feedUrl)) throw new Error('El enlace del feed debe empezar por https://');
+              if (vals.igMode === 'hashtag' && !vals.hashtag.replace(/^#/, '')) throw new Error('Escribe el hashtag que quieres usar.');
+            };
+          }
+        });
+        if (!v) return;
+        if (s.feedUrl) App.IG.cache.delete(s.feedUrl);
+        Object.assign(s, { feedUrl: v.feedUrl, igMode: v.igMode, hashtag: v.hashtag.replace(/^#/, '').trim(), limit: Math.max(1, Math.min(60, parseInt(v.limit, 10) || 12)) });
+        if (!s.hidden) s.hidden = [];
+        saveDraft(); App.render();
+        break;
+      }
+      case 'ig-toggle': {
+        const id = b.dataset.id;
+        s.hidden = s.hidden || [];
+        const k = s.hidden.indexOf(id);
+        if (k === -1) s.hidden.push(id); else s.hidden.splice(k, 1);
+        saveDraft(); App.render();
+        App.toast(k === -1 ? 'Publicación oculta en la web' : 'Publicación visible en la web');
+        break;
+      }
+      case 'ig-add-post': {
+        const v = await form({ title: 'Insertar publicación de Instagram', fields: [
+          { type: 'note', html: 'En Instagram, abre la publicación, pulsa <em>⋯ › Copiar enlace</em> y pégalo aquí. Se mostrará tal cual aparece en Instagram (tiene que ser una publicación pública).' },
+          { name: 'url', label: 'Enlace de la publicación', required: true, placeholder: 'https://www.instagram.com/p/…' }
+        ], submit: 'Insertar', onMount(api) {
+          api.onSubmit = (vals) => { if (!App.IG.postUrl(vals.url)) throw new Error('Ese enlace no es de una publicación de Instagram.'); };
+        } });
+        if (!v) return;
+        s.posts = (s.posts || []).concat(App.IG.postUrl(v.url));
+        saveDraft(); App.render();
+        break;
+      }
+      case 'ig-del-post': s.posts.splice(+a1, 1); saveDraft(); App.render(); break;
       case 'photo-del': {
         if (!(await confirmDlg('Eliminar foto', '¿Eliminar esta foto de la galería?', 'Eliminar'))) return;
         const i = +a1;
@@ -535,7 +596,7 @@
   }
 
   /* ---------- Secciones del menú ---------- */
-  const TYPE_NAMES = { hero: 'Portada', galleries: 'Galerías', about: 'Texto con foto', text: 'Texto', contact: 'Contacto' };
+  const TYPE_NAMES = { hero: 'Portada', galleries: 'Galerías', about: 'Texto con foto', text: 'Texto', contact: 'Contacto', instagram: 'Instagram' };
 
   async function manageSections() {
     const draft = JSON.parse(JSON.stringify(App.content.sections));
@@ -563,7 +624,7 @@
             <div class="field"><label for="newSecName">Nombre</label><input type="text" id="newSecName" placeholder="Ej.: Bodas"></div>
             <div class="field"><label for="newSecType">Tipo</label><select id="newSecType">
               <option value="galleries">Galerías de fotos</option><option value="about">Texto con foto</option>
-              <option value="text">Solo texto</option><option value="contact">Contacto</option><option value="hero">Portada</option></select></div>
+              <option value="text">Solo texto</option><option value="contact">Contacto</option><option value="instagram">Instagram</option><option value="hero">Portada</option></select></div>
             <button type="button" class="btn btn-sm" id="newSecAdd">Añadir</button></div>` }
       ],
       submit: 'Guardar cambios',
@@ -595,6 +656,7 @@
           if (type === 'galleries') Object.assign(s, { intro: '', albums: [] });
           if (type === 'about') Object.assign(s, { text: '', image: null });
           if (type === 'text' || type === 'contact') s.text = '';
+          if (type === 'instagram') Object.assign(s, { intro: '', feedUrl: '', igMode: 'all', hashtag: '', limit: 12, hidden: [], posts: [] });
           if (type === 'hero') Object.assign(s, { subtitle: '', cta: '', ctaTarget: draft[0].id, image: null });
           draft.push(s);
           $('#newSecName', api.dlg).value = '';

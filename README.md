@@ -93,6 +93,12 @@ Para cambiar el email de destino: **modo admin › Ajustes › Email**. Si lo ca
   - **🔗 Enlazar carpeta de Drive**: pega el enlace de una carpeta y se mostrará dentro de la galería, con un botón para abrirla en Drive. Es ideal para entregar sesiones completas.
   - **＋ Fotos de Drive**: pega enlaces de fotos sueltas, uno por línea. Aparecen en el mosaico y en el visor a pantalla completa, en 3 tamaños.
   - En Drive, comparte la carpeta o las fotos como **«Cualquier persona con el enlace»**. Si no, los visitantes no las verán.
+- **Instagram** (sección «Instagram» del menú):
+  - **⚙ Configurar feed automático**: tus publicaciones aparecen solas en la web, con su diseño y su visor a pantalla completa. Tú eliges qué sale:
+    - **Todas, menos las que ocultes**: cada publicación tiene un botón 🚫 Ocultar / 👁 Mostrar.
+    - **Solo las que lleven un hashtag**, por ejemplo `#albamanchaweb`. Lo escribes en Instagram y la publicación sale en la web sin tocar nada más.
+  - Para conectarlo (una sola vez): crea una cuenta gratuita en [behold.so](https://behold.so), conecta tu Instagram (tiene que ser **cuenta profesional o de creador**, que se cambia gratis en la app), crea un feed **JSON** y pega su enlace (`https://feeds.behold.so/…`) en *Configurar feed automático*. El plan gratuito de Behold muestra las **6 últimas publicaciones**.
+  - **＋ Publicación concreta**: pega el enlace de una publicación o reel y se inserta tal cual se ve en Instagram.
 - **🖼 Cambiar imagen**: cambia la foto de portada o la de «Sobre mí».
 - **⚙ Ajustes**: nombre, lema, pie de página, email, Instagram, datos de GitHub y contraseña.
 - **⋯ Más**: descargar una copia de seguridad, importarla o descartar cambios.
