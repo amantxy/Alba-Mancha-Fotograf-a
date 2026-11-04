@@ -312,7 +312,138 @@
       </section>`;
   }
 
-  const VIEWS = { hero: viewHero, galleries: viewGalleries, about: viewAbout, text: viewText, contact: viewContact };
+  /* ---------- Instagram ----------
+     1) Feed automático: lee un feed JSON (p. ej. de Behold.so, gratuito) con
+        tus últimas publicaciones y las muestra con el diseño de la web.
+        Tú decides cuáles salen: todas menos las que ocultes, o solo las que
+        lleven un hashtag concreto (p. ej. #albamanchaweb).
+     2) Publicaciones concretas: inserción oficial de Instagram por enlace. */
+  const IG = { cache: new Map(), shown: [] };
+  App.IG = IG;
+
+  IG.normalize = (json) => {
+    const list = Array.isArray(json) ? json : (json && (json.posts || json.data)) || [];
+    return list.map((p) => {
+      const sizes = p.sizes || {};
+      const pick = ['small', 'medium', 'large', 'full'].map((k) => sizes[k]).filter((x) => x && x.mediaUrl && x.width);
+      const isVideo = /VIDEO/i.test(p.mediaType || p.media_type || '');
+      const fallback = isVideo ? (p.thumbnailUrl || p.thumbnail_url) : (p.mediaUrl || p.media_url);
+      const best = pick[pick.length - 1];
+      const caption = String(p.caption || p.prunedCaption || '');
+      return {
+        id: String(p.id || p.permalink || ''),
+        permalink: p.permalink || '',
+        caption,
+        isVideo,
+        photo: {
+          src: ((pick.find((x) => x.width >= 700) || best || {}).mediaUrl) || fallback,
+          srcset: pick.filter((x) => !/,/.test(x.mediaUrl)).map((x) => `${x.mediaUrl} ${x.width}w`).join(', '),
+          w: best && best.width, h: best && best.height,
+          alt: (String(p.prunedCaption || caption).replace(/\s+/g, ' ').slice(0, 120)) || 'Publicación de Instagram',
+          caption: String(p.prunedCaption || caption)
+        }
+      };
+    }).filter((p) => p.id && p.photo.src);
+  };
+
+  IG.load = (url) => {
+    if (!IG.cache.has(url)) {
+      IG.cache.set(url, fetch(url, { cache: 'no-cache' })
+        .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(IG.normalize)
+        .catch((e) => { IG.cache.delete(url); throw e; }));
+    }
+    return IG.cache.get(url);
+  };
+
+  IG.matches = (post, s) => {
+    if (s.igMode !== 'hashtag' || !s.hashtag) return true;
+    const tag = String(s.hashtag).replace(/^#/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp('(^|[^\\w])#' + tag + '(?![\\w\\u00C0-\\u017F])', 'i').test(post.caption);
+  };
+
+  IG.postUrl = (url) => {
+    const m = String(url || '').match(/instagram\.com\/(?:[\w.]+\/)?(p|reel|tv)\/([\w-]+)/i);
+    return m ? `https://www.instagram.com/${m[1].toLowerCase()}/${m[2]}/` : null;
+  };
+
+  function viewInstagram(s, idx) {
+    const p = `sections.${idx}`; const site = App.content.site;
+    const posts = s.posts || [];
+    return `
+      <section class="page" data-section="${idx}">
+        <div class="container">
+          <h1 class="page-title" data-edit="${p}.title" data-placeholder="Título">${esc(s.title)}</h1>
+          <p class="page-intro" data-edit="${p}.intro" data-placeholder="Texto de introducción">${esc(s.intro)}</p>
+          ${App.isAdmin ? '<div class="admin-slot" data-slot="instagram"></div>' : ''}
+          ${s.feedUrl ? '<div class="ig-grid" id="igGrid"><div class="loading" style="min-height:160px;grid-column:1/-1"><span class="spinner"></span></div></div>' : ''}
+          ${posts.length ? `
+          <div class="ig-embeds">
+            ${posts.map((u, i) => `
+              <div class="ig-embed">
+                ${App.isAdmin ? `<div class="admin-tools" style="margin-bottom:8px"><button type="button" class="tool danger" data-act="ig-del-post:${i}">🗑 Quitar publicación</button></div>` : ''}
+                <blockquote class="instagram-media" data-instgrm-permalink="${esc(u)}" data-instgrm-version="14" style="max-width:540px;min-width:min(326px,100%);width:100%;margin:0">
+                  <a href="${esc(u)}" target="_blank" rel="noopener">Ver esta publicación en Instagram</a>
+                </blockquote>
+              </div>`).join('')}
+          </div>` : ''}
+          <div class="ig-follow">
+            <a class="btn" href="https://instagram.com/${esc(encodeURIComponent(site.instagram))}" target="_blank" rel="noopener">${ICONS.ig}<span>Seguir a @${esc(site.instagram)}</span></a>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function markLoaded(root) {
+    $$('img[loading="lazy"]', root).forEach((img) => {
+      if (img.complete) img.classList.add('loaded');
+      else { img.addEventListener('load', () => img.classList.add('loaded'), { once: true }); img.addEventListener('error', () => img.classList.add('loaded'), { once: true }); }
+    });
+  }
+
+  async function fillInstagram(s) {
+    const grid = $('#igGrid');
+    if (!grid) return;
+    let posts;
+    try { posts = await IG.load(s.feedUrl); }
+    catch (e) {
+      if (grid.isConnected) grid.innerHTML = App.isAdmin ? '<div class="empty-state" style="grid-column:1/-1">No se pudo cargar el feed de Instagram. Revisa el enlace en «Configurar feed».</div>' : '';
+      return;
+    }
+    if (!grid.isConnected) return; // la página cambió mientras cargaba
+    const hidden = new Set(s.hidden || []);
+    const filtered = posts.filter((x) => IG.matches(x, s));
+    const list = (App.isAdmin ? filtered : filtered.filter((x) => !hidden.has(x.id))).slice(0, +s.limit || 12);
+    IG.shown = list;
+    if (!list.length) {
+      grid.innerHTML = App.isAdmin ? `<div class="empty-state" style="grid-column:1/-1">${s.igMode === 'hashtag' && s.hashtag ? `Ninguna de tus últimas publicaciones lleva <strong>#${esc(String(s.hashtag).replace(/^#/, ''))}</strong>.` : 'El feed no tiene publicaciones.'}</div>` : '';
+      return;
+    }
+    grid.innerHTML = list.map((x, i) => {
+      const off = hidden.has(x.id);
+      const inner = App.img(x.photo, { sizes: '(min-width: 1024px) 25vw, (min-width: 600px) 33vw, 50vw' }) + (x.isVideo ? '<span class="ig-play" aria-hidden="true">▶</span>' : '');
+      return `
+        <figure class="ig-post${off ? ' is-hidden' : ''}">
+          ${x.isVideo
+            ? `<a class="open" href="${esc(x.permalink)}" target="_blank" rel="noopener" aria-label="Ver vídeo en Instagram">${inner}</a>`
+            : `<button class="open" type="button" data-ig-open="${i}" aria-label="Ver publicación ${i + 1}">${inner}</button>`}
+          ${App.isAdmin ? `<div class="admin-tools floating"><button type="button" class="tool${off ? ' star-on' : ''}" data-act="ig-toggle" data-id="${esc(x.id)}">${off ? '👁 Mostrar' : '🚫 Ocultar'}</button></div>${off ? '<span class="badge">Oculta</span>' : ''}` : ''}
+        </figure>`;
+    }).join('');
+    markLoaded(grid);
+  }
+
+  function loadIgEmbeds() {
+    if (!$('.instagram-media')) return;
+    if (window.instgrm) { window.instgrm.Embeds.process(); return; }
+    if (!$('#igEmbedJs')) {
+      const sc = document.createElement('script');
+      sc.id = 'igEmbedJs'; sc.async = true; sc.src = 'https://www.instagram.com/embed.js';
+      document.body.appendChild(sc);
+    }
+  }
+
+  const VIEWS = { hero: viewHero, galleries: viewGalleries, about: viewAbout, text: viewText, contact: viewContact, instagram: viewInstagram };
 
   App.render = () => {
     const c = App.content;
@@ -326,12 +457,10 @@
     main.innerHTML = s ? (VIEWS[s.type] || viewText)(s, idx) : '<div class="container page"><div class="empty-state">No hay secciones.</div></div>';
 
     // Fundido suave al cargar cada imagen
-    $$('img[loading="lazy"]', main).forEach((img) => {
-      if (img.complete) img.classList.add('loaded');
-      else { img.addEventListener('load', () => img.classList.add('loaded'), { once: true }); img.addEventListener('error', () => img.classList.add('loaded'), { once: true }); }
-    });
+    markLoaded(main);
 
     App.hooks.afterRender.forEach((fn) => fn(s, idx));
+    if (s && s.type === 'instagram') { fillInstagram(s); loadIgEmbeds(); }
   };
 
   function onRouteChange() {
@@ -398,6 +527,8 @@
         const a = s && (s.albums || []).find((x) => x.id === App.route.album);
         if (a) lbOpen(a.photos, +btn.dataset.open);
       }
+      const ig = e.target.closest('[data-ig-open]');
+      if (ig && IG.shown.length) lbOpen(IG.shown.map((x) => x.photo), +ig.dataset.igOpen);
       if (e.target.closest('[data-open-chat]')) Chat.open();
     });
   }

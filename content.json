@@ -202,6 +202,19 @@
       }
     },
     {
+      "id": "instagram",
+      "type": "instagram",
+      "label": "Instagram",
+      "title": "Instagram",
+      "intro": "Lo último que comparto en @am96photo.",
+      "feedUrl": "",
+      "igMode": "all",
+      "hashtag": "",
+      "limit": 12,
+      "hidden": [],
+      "posts": []
+    },
+    {
       "id": "contacto",
       "type": "contact",
       "label": "Contacto",
