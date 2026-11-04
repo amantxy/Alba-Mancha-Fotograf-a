@@ -32,10 +32,9 @@ images/         Fotos subidas desde el modo administrador
 El código está en la rama `claude/photography-portfolio-site-8gw09l`. En GitHub, abre una *Pull Request* hacia `main` y pulsa **Merge**.
 
 ### Paso 2. Activar GitHub Pages
-1. Ve al repositorio y entra en **Settings › Pages**.
-2. En *Build and deployment*, en **Source**, elige **GitHub Actions**. No hace falta pulsar nada más.
-3. Si en **Custom domain** aparece un dominio y los DNS todavía no están listos, pulsa **Remove** de momento.
-4. Ve a **Actions › Publicar web** y pulsa **Run workflow**, o haz cualquier cambio en `main`. En 1 o 2 minutos la web estará en `https://amantxy.github.io/AlbaManchaFotografia/`.
+1. Abre **Settings › Pages** del repositorio (mejor desde un ordenador; en el móvil, activa el «Sitio de escritorio»).
+2. En **Source**, elige **Deploy from a branch**, luego la rama **main** y la carpeta **/ (root)**, y pulsa **Save**.
+3. En 1 o 2 minutos la web estará en `https://amantxy.github.io/AlbaManchaFotografia/`.
 
 A partir de ahí, cada cambio en `main` se publica solo, tanto los míos como los del botón «Publicar» del modo administrador.
 
