@@ -82,6 +82,12 @@ Para cambiar el email de destino: **modo admin › Ajustes › Email**. Si lo ca
 
 ## 3. Usar el modo administrador
 
+### Página en construcción
+Mientras esté activada, el público solo ve una portada que dice **«Página en construcción · ¡Nos vemos pronto!»**, con tu Instagram y tu email.
+- Para ver la web completa, pulsa **«Acceso privado»** en esa portada y entra con tu usuario y contraseña. Ese dispositivo queda desbloqueado: aunque salgas del modo admin, seguirás viendo la web, con un aviso naranja arriba. Si pulsas **«Cerrar vista privada»** en ese aviso, vuelves a ver la portada de construcción.
+- Para abrir la web al público, en el modo admin pulsa **🚧 En construcción**, desmarca la casilla y pulsa **Publicar**.
+- Ten en cuenta que es una web estática: la portada oculta la web a los visitantes, pero no es un bloqueo de seguridad. No subas nada que deba ser realmente privado.
+
 ### Entrar
 - Pulsa **«Acceso»** en el pie de la página, añade `#admin` al final de la dirección o usa el atajo `Ctrl/Cmd + Shift + E`.
 - Usuario inicial: **`alba`** · Contraseña inicial: **`am96admin`**. **Cámbialos** en *Ajustes › Seguridad* y luego publica. Se guardan cifrados, nunca en claro.

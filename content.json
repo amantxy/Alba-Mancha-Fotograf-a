@@ -5,7 +5,12 @@
     "tagline": "Fotografía profesional",
     "email": "am96photo@gmail.com",
     "instagram": "am96photo",
-    "footer": "Fotografía de bodas, retrato, eventos y paisaje. Disponible para sesiones en toda España."
+    "footer": "Fotografía de bodas, retrato, eventos y paisaje. Disponible para sesiones en toda España.",
+    "maintenance": {
+      "enabled": true,
+      "title": "Página en construcción",
+      "message": "¡Nos vemos pronto!"
+    }
   },
   "admin": {
     "credentialsHash": "de16e050af0854184bc6884545aa7c67b948ec95228e731ef1e7bf0d0e7cc24b",

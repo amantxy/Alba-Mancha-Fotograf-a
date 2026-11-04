@@ -286,6 +286,7 @@
       <span class="tag">Modo admin</span>
       <span class="status" id="adminStatus"></span>
       <button type="button" data-bar="sections">☰ Secciones</button>
+      <button type="button" data-bar="construction" id="ucToggle"></button>
       <button type="button" data-bar="settings">⚙ Ajustes</button>
       <button type="button" data-bar="more">⋯ Más</button>
       <button type="button" data-bar="exit">Salir</button>
@@ -293,16 +294,37 @@
     document.body.appendChild(bar);
     bar.addEventListener('click', (e) => {
       const b = e.target.closest('[data-bar]'); if (!b) return;
-      ({ sections: manageSections, settings: openSettings, more: openMore, exit: exitAdmin, publish: openPublish })[b.dataset.bar]();
+      ({ sections: manageSections, settings: openSettings, more: openMore, exit: exitAdmin, publish: openPublish, construction: openConstruction })[b.dataset.bar]();
     });
     updateStatus();
   }
 
   function updateStatus() {
+    const uc = $('#ucToggle');
+    if (uc) uc.textContent = App.isUnderConstruction() ? '🚧 En construcción: SÍ' : '🌐 Web abierta al público';
     const st = $('#adminStatus'); if (!st) return;
     const n = Admin.pending.size;
     st.classList.toggle('dirty', Admin.dirty);
     st.textContent = Admin.dirty ? `Cambios sin publicar${n ? ` · ${n} archivo(s) de imagen` : ''}` : 'Todo publicado';
+  }
+
+  /* ---------- Modo «en construcción» ---------- */
+  async function openConstruction() {
+    const site = App.content.site;
+    const m = site.maintenance || { enabled: false, title: 'Página en construcción', message: '¡Nos vemos pronto!' };
+    const v = await form({
+      title: 'Página en construcción',
+      fields: [
+        { type: 'note', html: 'Mientras esté activado, los visitantes solo verán una portada con este mensaje. Tú verás la web completa en los dispositivos donde hayas entrado con tu usuario y contraseña.<br><br>Los cambios se aplican al pulsar <strong>Publicar</strong>.' },
+        { name: 'enabled', type: 'checkbox', label: 'Mostrar «Página en construcción» al público', value: !!m.enabled },
+        { name: 'title', label: 'Título', value: m.title || 'Página en construcción' },
+        { name: 'message', label: 'Mensaje', value: m.message || '¡Nos vemos pronto!' }
+      ]
+    });
+    if (!v) return;
+    site.maintenance = { enabled: v.enabled, title: v.title || 'Página en construcción', message: v.message || '¡Nos vemos pronto!' };
+    saveDraft();
+    App.toast(v.enabled ? 'Modo construcción activado. Pulsa «Publicar» para aplicarlo.' : 'La web se abrirá al público al pulsar «Publicar».', 5000);
   }
 
   /* ---------- Edición en línea ---------- */
@@ -913,6 +935,7 @@
             : (await sha256(v.pass)) === adm.passwordHash;
           if (!ok) throw new Error('Usuario o contraseña incorrectos.');
           try { sessionStorage.setItem(SS_ADMIN, '1'); } catch (e) { /* nada */ }
+          App.unlockPreview(); // este dispositivo puede ver la web aunque esté «en construcción»
           await enter();
         };
       }
@@ -960,4 +983,5 @@
   };
 
   Admin.disable = disableEditables;
+  Admin.login = login;
 })();
