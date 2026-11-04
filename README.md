@@ -35,7 +35,7 @@ El código está en la rama `claude/photography-portfolio-site-8gw09l`. En GitHu
 1. Ve al repositorio y entra en **Settings › Pages**.
 2. En *Build and deployment*, en **Source**, elige **GitHub Actions**. No hace falta pulsar nada más.
 3. Si en **Custom domain** aparece un dominio y los DNS todavía no están listos, pulsa **Remove** de momento.
-4. Ve a **Actions › Publicar web** y pulsa **Run workflow**, o haz cualquier cambio en `main`. En 1 o 2 minutos la web estará en `https://amantxy.github.io/Alba-Mancha-Fotograf-a/`.
+4. Ve a **Actions › Publicar web** y pulsa **Run workflow**, o haz cualquier cambio en `main`. En 1 o 2 minutos la web estará en `https://amantxy.github.io/Alba-Mancha-Fotografia/`.
 
 A partir de ahí, cada cambio en `main` se publica solo, tanto los míos como los del botón «Publicar» del modo administrador.
 
@@ -114,7 +114,7 @@ Los cambios se guardan como **borrador en tu navegador** hasta que pulses **⬆ 
 Para que el botón **Publicar** pueda guardar en el repositorio, crea un *token* de GitHub:
 
 1. En GitHub, entra en **Settings** (de tu cuenta) **› Developer settings › Personal access tokens › Fine-grained tokens › Generate new token**.
-2. **Repository access**: elige *Only select repositories* y marca `Alba-Mancha-Fotograf-a`.
+2. **Repository access**: elige *Only select repositories* y marca `Alba-Mancha-Fotografia`.
 3. **Permissions › Repository permissions › Contents**: **Read and write**.
 4. Elige una caducidad (por ejemplo 1 año), genera el token y cópialo.
 5. En la web, pulsa **⬆ Publicar**, pega el token y marca «Recordar» si es tu propio dispositivo.
