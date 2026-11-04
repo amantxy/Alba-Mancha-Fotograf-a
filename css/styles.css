@@ -219,6 +219,7 @@ img.loaded { opacity: 1; }
 .ig-post:hover img { transform: scale(1.04); }
 .ig-post.is-hidden img { opacity: .3 !important; filter: grayscale(1); }
 .ig-play { position: absolute; top: 10px; left: 10px; color: #fff; font-size: .9rem; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+.ig-photos { margin-bottom: clamp(20px, 3vw, 36px); }
 .ig-embeds { display: grid; gap: 24px; margin-top: clamp(24px, 4vw, 40px); grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); justify-items: center; }
 .ig-embed { width: 100%; max-width: 540px; }
 .ig-follow { margin-top: clamp(28px, 4vw, 44px); text-align: center; }

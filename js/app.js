@@ -376,6 +376,16 @@
           <h1 class="page-title" data-edit="${p}.title" data-placeholder="Título">${esc(s.title)}</h1>
           <p class="page-intro" data-edit="${p}.intro" data-placeholder="Texto de introducción">${esc(s.intro)}</p>
           ${App.isAdmin ? '<div class="admin-slot" data-slot="instagram"></div>' : ''}
+          ${(s.photos || []).length ? `
+          <div class="photo-grid ig-photos">
+            ${s.photos.map((ph, i) => `
+              <figure class="photo" data-photo="${i}">
+                <button class="open" type="button" data-open="${i}" aria-label="Ver foto ${i + 1}${ph.alt ? ': ' + esc(ph.alt) : ''}">
+                  ${App.img(ph, { sizes: '(min-width: 1600px) 25vw, (min-width: 1024px) 33vw, (min-width: 600px) 50vw, 100vw' })}
+                </button>
+                <figcaption>${esc(ph.caption)}</figcaption>
+              </figure>`).join('')}
+          </div>` : ''}
           ${s.feedUrl ? '<div class="ig-grid" id="igGrid"><div class="loading" style="min-height:160px;grid-column:1/-1"><span class="spinner"></span></div></div>' : ''}
           ${posts.length ? `
           <div class="ig-embeds">
@@ -524,7 +534,7 @@
       const btn = e.target.closest('[data-open]');
       if (btn && !(App.isAdmin && e.target.closest('[data-edit]'))) {
         const s = App.findSection(App.route.section);
-        const a = s && (s.albums || []).find((x) => x.id === App.route.album);
+        const a = s && ((s.albums || []).find((x) => x.id === App.route.album) || (s.type === 'instagram' ? s : null));
         if (a) lbOpen(a.photos, +btn.dataset.open);
       }
       const ig = e.target.closest('[data-ig-open]');
