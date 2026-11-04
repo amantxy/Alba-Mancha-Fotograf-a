@@ -88,6 +88,8 @@
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
     return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
   }
+  // Usuario y contraseña se guardan juntos y cifrados (SHA-256), nunca en claro
+  const credHash = (user, pass) => sha256(String(user).trim().toLowerCase() + ':' + pass);
   const rand = () => Math.random().toString(36).slice(2, 7);
 
   function blobToBase64(blob) {
@@ -259,7 +261,7 @@
       title,
       fields: [
         { type: 'file', name: 'files', label: 'Subir desde tu dispositivo', accept: 'image/*' },
-        { type: 'text', name: 'url', label: '…o pegar la URL de una imagen', placeholder: 'https://…' },
+        { type: 'text', name: 'url', label: '…o pegar la URL de una imagen (también enlaces de Google Drive)', placeholder: 'https://…' },
         { type: 'text', name: 'alt', label: 'Descripción (texto alternativo)', help: 'Ayuda a la accesibilidad y al posicionamiento en Google.' }
       ],
       submit: 'Usar imagen'
@@ -267,7 +269,10 @@
     if (!v) return null;
     let photo = null;
     if (v.files && v.files.length) { photo = (await processMany(v.files.slice(0, 1), folder))[0]; mode = 'file'; }
-    else if (v.url) { photo = { src: v.url, alt: '', caption: '' }; mode = 'url'; }
+    else if (v.url) {
+      if (App.drive.isFolder(v.url)) { App.toast('Ese enlace es de una carpeta. Pega el enlace de una foto concreta de Drive.'); return null; }
+      photo = App.photoFromUrl(v.url); mode = 'url';
+    }
     if (photo && v.alt) photo.alt = v.alt;
     return photo && mode ? photo : null;
   }
@@ -373,6 +378,8 @@
         const slot = $('[data-slot="album"]', main);
         slot.className = 'admin-tools bar';
         slot.innerHTML = tool('photos-add', '＋ Subir fotos', 'Subir fotos') + tool('photos-url', '＋ Foto por URL', 'Añadir foto desde una URL') +
+          tool('drive-photos', '＋ Fotos de Drive', 'Añadir fotos desde enlaces de Google Drive') +
+          tool('drive-link', a.drive ? '🔗 Editar carpeta de Drive' : '🔗 Enlazar carpeta de Drive', 'Enlace a una carpeta de Google Drive') +
           tool('album-del-current', '🗑 Eliminar galería', 'Eliminar galería', ' danger') +
           '<span class="hint">También puedes arrastrar fotos aquí. Se optimizan automáticamente en varios tamaños.</span>';
         $$('.photo', main).forEach((fig) => {
@@ -463,7 +470,37 @@
           { name: 'alt', label: 'Descripción (texto alternativo)' },
           { name: 'caption', label: 'Pie de foto (opcional)' }
         ], submit: 'Añadir' });
-        if (v) { album.photos.push({ src: v.url, alt: v.alt, caption: v.caption }); saveDraft(); App.render(); }
+        if (v) { album.photos.push(App.photoFromUrl(v.url, v.alt, v.caption)); saveDraft(); App.render(); }
+        break;
+      }
+      case 'drive-link': {
+        const v = await form({ title: 'Carpeta de Google Drive', fields: [
+          { type: 'note', html: 'Pega el enlace de una carpeta de Google Drive. Se mostrará dentro de esta galería con un botón para abrirla.<br><br><strong>Importante:</strong> en Drive, pulsa <em>Compartir › Acceso general › «Cualquier persona con el enlace»</em> para que los visitantes puedan verla.' },
+          { name: 'drive', label: 'Enlace de la carpeta (vacío = quitar)', value: album.drive || '', placeholder: 'https://drive.google.com/drive/folders/…' }
+        ] , onMount(api) {
+          api.onSubmit = (vals) => {
+            if (vals.drive && (!App.drive.isDrive(vals.drive) || !App.drive.id(vals.drive))) throw new Error('Ese enlace no parece de Google Drive.');
+          };
+        } });
+        if (v) { album.drive = v.drive; saveDraft(); App.render(); App.toast(v.drive ? 'Carpeta de Drive enlazada' : 'Enlace de Drive eliminado'); }
+        break;
+      }
+      case 'drive-photos': {
+        const v = await form({ title: 'Añadir fotos de Google Drive', fields: [
+          { type: 'note', html: 'En Drive, selecciona la foto, pulsa <em>Compartir › «Cualquier persona con el enlace»</em> y <em>Copiar enlace</em>. Pega aquí uno o varios enlaces, <strong>uno por línea</strong>. Las fotos se verán en la galería y en el visor a pantalla completa.<br><br>Si compartes la <em>carpeta entera</em> con «Cualquier persona con el enlace», todas sus fotos quedan compartidas a la vez.' },
+          { name: 'links', label: 'Enlaces de las fotos', type: 'textarea', required: true, placeholder: 'https://drive.google.com/file/d/…/view?usp=sharing' }
+        ], submit: 'Añadir' });
+        if (!v) return;
+        const lines = v.links.split(/[\s,]+/).filter(Boolean);
+        const added = []; let folders = 0, bad = 0;
+        lines.forEach((l) => {
+          if (App.drive.isFolder(l)) { folders++; if (!album.drive) album.drive = l; return; }
+          const ph = App.drive.isDrive(l) && App.drive.photo(l);
+          if (ph) added.push(ph); else bad++;
+        });
+        album.photos = (album.photos || []).concat(added);
+        saveDraft(); App.render();
+        App.toast(`${added.length} foto(s) añadida(s)` + (folders ? ' · carpeta enlazada' : '') + (bad ? ` · ${bad} enlace(s) no válidos` : ''), 5000);
         break;
       }
       case 'photo-move': {
@@ -592,11 +629,14 @@
         { name: 'repo', label: 'Repositorio', value: gh.repo },
         { name: 'branch', label: 'Rama publicada', value: gh.branch, help: 'La rama que GitHub Pages usa para servir la web (normalmente main).' },
         { type: 'heading', label: 'Seguridad' },
-        { name: 'pass1', label: 'Nueva contraseña de administrador (dejar vacío para no cambiar)', type: 'password', autocomplete: 'new-password' },
+        { type: 'note', label: 'Para cambiar el usuario o la contraseña, rellena los tres campos. Déjalos vacíos para no cambiar nada.' },
+        { name: 'user', label: 'Usuario administrador', autocomplete: 'username' },
+        { name: 'pass1', label: 'Nueva contraseña', type: 'password', autocomplete: 'new-password' },
         { name: 'pass2', label: 'Repite la nueva contraseña', type: 'password', autocomplete: 'new-password' }
       ],
       onMount(api) {
         api.onSubmit = (vals) => {
+          if ((vals.user || vals.pass1) && !(vals.user && vals.pass1)) throw new Error('Para cambiar el acceso, escribe el usuario y la nueva contraseña.');
           if (vals.pass1 !== vals.pass2) throw new Error('Las contraseñas no coinciden.');
           if (vals.pass1 && vals.pass1.length < 8) throw new Error('La contraseña debe tener al menos 8 caracteres.');
           if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(vals.email)) throw new Error('El email no es válido.');
@@ -606,7 +646,11 @@
     if (!v) return;
     Object.assign(site, { brand: v.brand, title: v.title, tagline: v.tagline, footer: v.footer, email: v.email, instagram: v.instagram.replace(/^@/, '') });
     Object.assign(gh, { owner: v.owner, repo: v.repo, branch: v.branch || 'main' });
-    if (v.pass1) { App.content.admin.passwordHash = await sha256(v.pass1); App.toast('Contraseña cambiada. Se aplicará al publicar.'); }
+    if (v.user && v.pass1) {
+      App.content.admin.credentialsHash = await credHash(v.user, v.pass1);
+      delete App.content.admin.passwordHash;
+      App.toast('Usuario y contraseña cambiados. Se aplicarán al publicar.', 5000);
+    }
     saveDraft(); App.render();
   }
 
@@ -781,10 +825,16 @@
     await form({
       title: 'Acceso administrador',
       submit: 'Entrar',
-      fields: [{ name: 'pass', label: 'Contraseña', type: 'password', required: true, autocomplete: 'current-password' }],
+      fields: [
+        { name: 'user', label: 'Usuario', required: true, autocomplete: 'username' },
+        { name: 'pass', label: 'Contraseña', type: 'password', required: true, autocomplete: 'current-password' }
+      ],
       onMount(api) {
         api.onSubmit = async (v) => {
-          if ((await sha256(v.pass)) !== App.content.admin.passwordHash) throw new Error('Contraseña incorrecta.');
+          const adm = App.content.admin;
+          const ok = adm.credentialsHash ? (await credHash(v.user, v.pass)) === adm.credentialsHash
+            : (await sha256(v.pass)) === adm.passwordHash;
+          if (!ok) throw new Error('Usuario o contraseña incorrectos.');
           try { sessionStorage.setItem(SS_ADMIN, '1'); } catch (e) { /* nada */ }
           await enter();
         };

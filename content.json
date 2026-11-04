@@ -8,7 +8,7 @@
     "footer": "Fotografía de bodas, retrato, eventos y paisaje. Disponible para sesiones en toda España."
   },
   "admin": {
-    "passwordHash": "42c9780741d5c3713b3cd6c1fd7a24f245fdde3c0674ce4789ae4f3376d29853",
+    "credentialsHash": "de16e050af0854184bc6884545aa7c67b948ec95228e731ef1e7bf0d0e7cc24b",
     "github": {
       "owner": "amantxy",
       "repo": "Alba-Mancha-Fotograf-a",
