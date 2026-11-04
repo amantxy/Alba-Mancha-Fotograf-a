@@ -455,8 +455,58 @@
 
   const VIEWS = { hero: viewHero, galleries: viewGalleries, about: viewAbout, text: viewText, contact: viewContact, instagram: viewInstagram };
 
+  /* ---------- Modo «en construcción» ----------
+     Mientras esté activado, los visitantes solo ven una portada de
+     «Página en construcción». La dueña entra con su usuario y contraseña
+     («Acceso») y, desde ese dispositivo, ve la web completa. */
+  const LS_PREVIEW = 'am96-preview';
+  App.isUnderConstruction = () => !!(App.content.site.maintenance && App.content.site.maintenance.enabled);
+  App.previewUnlocked = () => {
+    try { return !!App.content.admin.credentialsHash && localStorage.getItem(LS_PREVIEW) === App.content.admin.credentialsHash; }
+    catch (e) { return false; }
+  };
+  App.unlockPreview = () => { try { localStorage.setItem(LS_PREVIEW, App.content.admin.credentialsHash); } catch (e) { /* nada */ } };
+  App.lockPreview = () => { try { localStorage.removeItem(LS_PREVIEW); } catch (e) { /* nada */ } };
+
+  function renderConstruction() {
+    const site = App.content.site; const m = site.maintenance || {};
+    const hero = App.content.sections.find((s) => s.type === 'hero' && s.image && s.image.src);
+    document.title = site.brand + ' · ' + (m.title || 'Página en construcción');
+    document.body.classList.add('construction');
+    $('#main').innerHTML = `
+      <section class="uc">
+        ${hero ? `<div class="uc-media">${App.img(hero.image, { eager: true, sizes: '100vw' })}</div>` : ''}
+        <div class="uc-content">
+          <p class="uc-brand">${esc(site.brand)}</p>
+          <h1 class="uc-title">${esc(m.title || 'Página en construcción')}</h1>
+          <p class="uc-message">${esc(m.message || '¡Nos vemos pronto!')}</p>
+          <div class="uc-links">
+            <a class="btn btn-light" href="https://instagram.com/${esc(encodeURIComponent(site.instagram))}" target="_blank" rel="noopener">${ICONS.ig}<span>@${esc(site.instagram)}</span></a>
+            <a class="btn btn-ghost-light" href="mailto:${esc(site.email)}">${ICONS.mail}<span>${esc(site.email)}</span></a>
+          </div>
+          <button type="button" class="uc-access" id="ucAccess">Acceso privado</button>
+        </div>
+      </section>`;
+    $('#ucAccess').onclick = () => { if (window.Admin) window.Admin.login(); };
+  }
+
+  function previewBadge() {
+    let b = $('#previewBadge');
+    const show = App.isUnderConstruction() && !App.isAdmin && App.previewUnlocked();
+    if (!show) { if (b) b.remove(); return; }
+    if (b) return;
+    b = document.createElement('div');
+    b.id = 'previewBadge'; b.className = 'preview-badge';
+    b.innerHTML = '<span>🚧 Vista privada: el público ve «Página en construcción»</span><button type="button">Cerrar vista privada</button>';
+    b.querySelector('button').onclick = () => { App.lockPreview(); location.hash = '#/'; location.reload(); };
+    document.body.appendChild(b);
+  }
+
   App.render = () => {
     const c = App.content;
+    if (App.isUnderConstruction() && !App.isAdmin && !App.previewUnlocked()) { renderConstruction(); return; }
+    document.body.classList.remove('construction');
+    previewBadge();
     const r = parseRoute() || App.route;
     let idx = c.sections.findIndex((s) => s.id === r.section);
     if (idx === -1) idx = 0;
