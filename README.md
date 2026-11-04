@@ -33,9 +33,13 @@ El código está en la rama `claude/photography-portfolio-site-8gw09l`. En GitHu
 
 ### Paso 2. Activar GitHub Pages
 1. Ve al repositorio y entra en **Settings › Pages**.
-2. En *Build and deployment*, en **Source**, elige **Deploy from a branch**.
-3. Elige la rama **main** y la carpeta **/ (root)**, y pulsa **Save**.
-4. Cuando hayas configurado los DNS de IONOS (paso 3), escribe `albamancha.com` en **Custom domain** y pulsa **Save**. Hasta entonces, la web se ve en `https://amantxy.github.io/Alba-Mancha-Fotograf-a/`.
+2. En *Build and deployment*, en **Source**, elige **GitHub Actions**. No hace falta pulsar nada más.
+3. Si en **Custom domain** aparece un dominio y los DNS todavía no están listos, pulsa **Remove** de momento.
+4. Ve a **Actions › Publicar web** y pulsa **Run workflow**, o haz cualquier cambio en `main`. En 1 o 2 minutos la web estará en `https://amantxy.github.io/Alba-Mancha-Fotograf-a/`.
+
+A partir de ahí, cada cambio en `main` se publica solo, tanto los míos como los del botón «Publicar» del modo administrador.
+
+Cuando los DNS de IONOS (paso 3) apunten a GitHub, escribe `albamancha.com` en **Custom domain** y pulsa **Save**.
 
 ### Paso 3. Apuntar albamancha.com a GitHub en IONOS
 1. Entra en [ionos.es](https://www.ionos.es) y ve a **Menú › Dominios y SSL**.
@@ -98,6 +102,7 @@ Para cambiar el email de destino: **modo admin › Ajustes › Email**. Si lo ca
     - **Todas, menos las que ocultes**: cada publicación tiene un botón 🚫 Ocultar / 👁 Mostrar.
     - **Solo las que lleven un hashtag**, por ejemplo `#albamanchaweb`. Lo escribes en Instagram y la publicación sale en la web sin tocar nada más.
   - Para conectarlo (una sola vez): crea una cuenta gratuita en [behold.so](https://behold.so), conecta tu Instagram (tiene que ser **cuenta profesional o de creador**, que se cambia gratis en la app), crea un feed **JSON** y pega su enlace (`https://feeds.behold.so/…`) en *Configurar feed automático*. El plan gratuito de Behold muestra las **6 últimas publicaciones**.
+  - **＋ Subir fotos** / **＋ Fotos de Drive**: tus fotos en máxima calidad, que Instagram comprime. Se ven en mosaico y en el visor a pantalla completa.
   - **＋ Publicación concreta**: pega el enlace de una publicación o reel y se inserta tal cual se ve en Instagram.
 - **🖼 Cambiar imagen**: cambia la foto de portada o la de «Sobre mí».
 - **⚙ Ajustes**: nombre, lema, pie de página, email, Instagram, datos de GitHub y contraseña.

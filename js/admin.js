@@ -363,7 +363,11 @@
         : 'Mostrando todas tus publicaciones, menos las que ocultes';
       slot.innerHTML = tool('ig-config', '⚙ Configurar feed automático', 'Configurar el feed automático de Instagram') +
         tool('ig-add-post', '＋ Publicación concreta', 'Insertar una publicación concreta de Instagram') +
+        tool('photos-add', '＋ Subir fotos', 'Subir tus fotos en máxima calidad') +
+        tool('drive-photos', '＋ Fotos de Drive', 'Añadir fotos desde enlaces de Google Drive') +
         `<span class="hint">${mode}</span>`;
+      photoTools(main, section, false);
+      dropZone(main, section);
     }
 
     if (section.type === 'about') {
@@ -393,28 +397,37 @@
           tool('drive-link', a.drive ? '🔗 Editar carpeta de Drive' : '🔗 Enlazar carpeta de Drive', 'Enlace a una carpeta de Google Drive') +
           tool('album-del-current', '🗑 Eliminar galería', 'Eliminar galería', ' danger') +
           '<span class="hint">También puedes arrastrar fotos aquí. Se optimizan automáticamente en varios tamaños.</span>';
-        $$('.photo', main).forEach((fig) => {
-          const i = +fig.dataset.photo;
-          const t = document.createElement('div');
-          t.className = 'admin-tools floating';
-          t.innerHTML = tool(`photo-move:${i}:-1`, '←', 'Mover antes') + tool(`photo-move:${i}:1`, '→', 'Mover después') +
-            tool(`photo-edit:${i}`, '✎', 'Editar pie y descripción') +
-            tool(`photo-cover:${i}`, '★', 'Usar como portada', (a.cover || 0) === i ? ' star-on' : '') +
-            tool(`photo-del:${i}`, '🗑', 'Eliminar foto', ' danger');
-          fig.appendChild(t);
-          if ((a.cover || 0) === i) fig.insertAdjacentHTML('beforeend', '<span class="badge">Portada</span>');
-        });
-        // Arrastrar y soltar
-        const zone = $('.page', main);
-        zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drop-active'); });
-        zone.addEventListener('dragleave', (e) => { if (e.target === zone) zone.classList.remove('drop-active'); });
-        zone.addEventListener('drop', async (e) => {
-          e.preventDefault(); zone.classList.remove('drop-active');
-          const files = Array.from(e.dataTransfer.files || []);
-          if (files.length) addPhotos(a, files);
-        });
+        photoTools(main, a, true);
+        dropZone(main, a);
       }
     }
+  }
+
+  // Botones sobre cada foto (mover, editar, portada, borrar)
+  function photoTools(main, a, withCover) {
+    $$('.photo', main).forEach((fig) => {
+      const i = +fig.dataset.photo;
+      const t = document.createElement('div');
+      t.className = 'admin-tools floating';
+      t.innerHTML = tool(`photo-move:${i}:-1`, '←', 'Mover antes') + tool(`photo-move:${i}:1`, '→', 'Mover después') +
+        tool(`photo-edit:${i}`, '✎', 'Editar pie y descripción') +
+        (withCover ? tool(`photo-cover:${i}`, '★', 'Usar como portada', (a.cover || 0) === i ? ' star-on' : '') : '') +
+        tool(`photo-del:${i}`, '🗑', 'Eliminar foto', ' danger');
+      fig.appendChild(t);
+      if (withCover && (a.cover || 0) === i) fig.insertAdjacentHTML('beforeend', '<span class="badge">Portada</span>');
+    });
+  }
+
+  // Arrastrar y soltar fotos sobre la página
+  function dropZone(main, a) {
+    const zone = $('.page', main);
+    zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drop-active'); });
+    zone.addEventListener('dragleave', (e) => { if (e.target === zone) zone.classList.remove('drop-active'); });
+    zone.addEventListener('drop', async (e) => {
+      e.preventDefault(); zone.classList.remove('drop-active');
+      const files = Array.from(e.dataTransfer.files || []);
+      if (files.length) addPhotos(a, files);
+    });
   }
 
   async function addPhotos(album, files) {
@@ -434,7 +447,9 @@
     const sIdx = App.content.sections.findIndex((s) => s.id === App.route.section);
     const s = App.content.sections[sIdx < 0 ? 0 : sIdx];
     const albums = s.albums || (s.albums = []);
-    const album = albums.find((x) => x.id === App.route.album);
+    // En la sección Instagram, las fotos subidas se gestionan igual que una galería
+    const album = albums.find((x) => x.id === App.route.album) ||
+      (s.type === 'instagram' ? Object.assign(s, { photos: s.photos || [] }) : undefined);
 
     switch (act) {
       case 'hero-image': case 'about-image': {
